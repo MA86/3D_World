@@ -147,7 +147,7 @@ class Vector3D:
         return Vector3D(self.x - other.x, self.y - other.y, self.z - other.z)
 
     # Component-wise multiplication
-    def __mul__(self, other: Vector3D) -> Vector3D:
+    def __mul__(self, other) -> Vector3D:
         if isinstance(other, Vector3D):
             # Two vectors
             return Vector3D(self.x * other.x, self.y * other.y, self.z * other.z)
@@ -221,8 +221,12 @@ class Vector3D:
     # Transform vector by quaternion
     @staticmethod
     def transform_q(vec: Vector3D, q: Quaternion) -> Vector3D:
-        # TODO
-        raise NotImplementedError()
+        # v + 2.0 * cross(q.xyz, cross(q.xyz, v) + q.w * v)
+        qv: Vector3D = Vector3D(q.x, q.y, q.z)
+        ret_val: Vector3D = vec + \
+            Vector3D.cross(qv, Vector3D.cross(qv, vec) + vec * q.w) * 2.0
+
+        return ret_val
 
 
 # 4x4 Matrix
@@ -391,4 +395,114 @@ class Matrix4:
 
         return temp
 
+    @staticmethod
+    def create_from_quaternion(q: Quaternion) -> Matrix4:
+        ret_val: Matrix4 = Matrix4()
+
+        ret_val.m_mat[0][0] = 1.0 - 2.0 * q.y * q.y - 2.0 * q.z * q.z
+        ret_val.m_mat[0][1] = 2.0 * q.x * q.y + 2.0 * q.w * q.z
+        ret_val.m_mat[0][2] = 2.0 * q.x * q.z - 2.0 * q.w * q.y
+        ret_val.m_mat[0][3] = 0.0
+
+        ret_val.m_mat[1][0] = 2.0 * q.x * q.y - 2.0 * q.w * q.z
+        ret_val.m_mat[1][1] = 1.0 - 2.0 * q.x * q.x - 2.0 * q.z * q.z
+        ret_val.m_mat[1][2] = 2.0 * q.y * q.z + 2.0 * q.w * q.x
+        ret_val.m_mat[1][3] = 0.0
+
+        ret_val.m_mat[2][0] = 2.0 * q.x * q.z + 2.0 * q.w * q.y
+        ret_val.m_mat[2][1] = 2.0 * q.y * q.z - 2.0 * q.w * q.x
+        ret_val.m_mat[2][2] = 1.0 - 2.0 * q.x * q.x - 2.0 * q.y * q.y
+        ret_val.m_mat[2][3] = 0.0
+
+        ret_val.m_mat[3][0] = 0.0
+        ret_val.m_mat[3][1] = 0.0
+        ret_val.m_mat[3][2] = 0.0
+        ret_val.m_mat[3][3] = 1.0
+
+        return ret_val
+
     # TODO, add additional matrix4 operations
+
+
+class Quaternion:
+    def __init__(self) -> None:
+        # Default is identity
+        self.x: float = 0.0
+        self.y: float = 0.0
+        self.z: float = 0.0
+        self.w: float = 1.0
+
+    @staticmethod
+    def create_quaternion(axis: Vector3D, angle: float) -> None:
+        temp = Quaternion()
+
+        scalar: float = math.sin(angle / 2.0)
+        temp.x = axis.x * scalar
+        temp.y = axis.y * scalar
+        temp.z = axis.z * scalar
+        temp.w = math.cos(angle / 2.0)
+
+        return temp
+
+    def length_sq(self) -> float:
+        return (self.x * self.x + self.y * self.y + self.z * self.z + self.w * self.w)
+
+    def length(self) -> float:
+        return math.sqrt(self.length_sq())
+
+    def normalize(self) -> None:
+        length: float = self.length()
+        self.x /= length
+        self.y /= length
+        self.z /= length
+        self.w /= length
+
+    @staticmethod
+    def lerp(a: Quaternion, b: Quaternion, f: float) -> Quaternion:
+        ret_val: Quaternion = Quaternion()
+        ret_val.x = lerp(a.x, b.x, f)
+        ret_val.y = lerp(a.y, b.y, f)
+        ret_val.z = lerp(a.z, b.z, f)
+        ret_val.w = lerp(a.w, b.w, f)
+        ret_val.normalize()
+
+        return ret_val
+
+    @staticmethod
+    def dot(a: Quaternion, b: Quaternion) -> float:
+        return a.x * b.x + a.y * b.y + a.z * b.z + a.w * b.w
+
+    @staticmethod
+    def slerp(a: Quaternion, b: Quaternion, f: float) -> Quaternion:
+        raw_cosm: float = Quaternion.dot(a, b)
+
+        cosom: float = -raw_cosm
+        if raw_cosm >= 0.0:
+            cosom = raw_cosm
+
+        scale0: float = 0.0
+        scale1: float = 0.0
+        if cosom < 0.9999:
+            omega: float = math.acos(cosom)
+            inv_sin: float = 1.0 / math.sin(omega)
+        # TODO
+        pass
+
+    @staticmethod
+    def concatenate(q: Quaternion, p: Quaternion) -> Quaternion:
+        ret_val: Quaternion = Quaternion()
+
+        # Vector component:
+        # ps * qv + qs * pv + pv x qv
+        qv: Vector3D = Vector3D(q.x, q.y, q.z)
+        pv: Vector3D = Vector3D(p.x, p.y, p.z)
+        new_vec: Vector3D = qv * p.w + pv * q.w + Vector3D.cross(pv, qv)
+        ret_val.x = new_vec.x
+        ret_val.y = new_vec.y
+        ret_val.z = new_vec.z
+
+        # Scalar component:
+        # ps * qs - pv . qv
+        ret_val.w = p.w * q.w - Vector3D.dot(pv, qv)
+
+        return ret_val
