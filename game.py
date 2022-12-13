@@ -217,7 +217,6 @@ class Game:
         return True
 
     def _create_sprite_vertices(self) -> None:
-        # TODO Add alpha and ...
         vertices: ctypes.Array = (ctypes.c_float * 20)(
             -0.5, 0.5, 0.0, 0.0, 0.0,    # Top left
             0.5, 0.5, 0.0, 1.0, 0.0,     # Top right

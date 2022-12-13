@@ -24,7 +24,7 @@ class Shader:
 
     # Load vertex & frag shaders
     def load(self, vert_name: str, frag_name: str) -> bool:
-        # Compile vertex & pixel shaders
+        # Compile vertex & frag shaders
         if (self._compile_shader(vert_name, GL.GL_VERTEX_SHADER, "vertex") == False
                 or self._compile_shader(frag_name, GL.GL_FRAGMENT_SHADER, "frag") == False):
             return False
