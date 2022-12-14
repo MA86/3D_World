@@ -20,24 +20,24 @@ from asteroid import Asteroid
 
 class Game:
     def __init__(self):
-        # For SDL use
+        # For SDL use//
         self._m_window: sdl2.SDL_Window = None
         self._m_context: sdl2.SDL_GLContext = None
         self._m_renderer = None  # TODO
 
-        # All loaded textures
+        # All loaded textures//
         self._m_textures = {}
 
         # All actors
         self._m_actors = []
         self._m_pending_actors = []
 
-        # All sprites drawn
+        # All sprites drawn//
         self._m_sprites = []
 
-        # Sprite shader
+        # Sprite shader//
         self._m_sprite_shader: Shader = None
-        # Sprite mesh (represented by vertex array)
+        # Sprite mesh (represented by vertex array)//
         self._m_sprite_vertices: VertexArray = None
 
         self._m_updating_actors: bool = False
@@ -55,53 +55,6 @@ class Game:
             sdl2.SDL_Log(b"SDL initialization failed: ",
                          sdl2.SDL_GetError())
             return False
-
-        # First, configure attributes for OpenGL: start
-        sdl2.SDL_GL_SetAttribute(sdl2.SDL_GL_CONTEXT_PROFILE_MASK,
-                                 sdl2.SDL_GL_CONTEXT_PROFILE_CORE)  # Set core profile
-        # Set version 3.3
-        sdl2.SDL_GL_SetAttribute(
-            sdl2.SDL_GL_CONTEXT_MAJOR_VERSION, 3)
-        sdl2.SDL_GL_SetAttribute(sdl2.SDL_GL_CONTEXT_MINOR_VERSION, 3)
-        # Set color buffer
-        sdl2.SDL_GL_SetAttribute(sdl2.SDL_GL_RED_SIZE,
-                                 8)
-        sdl2.SDL_GL_SetAttribute(sdl2.SDL_GL_GREEN_SIZE, 8)
-        sdl2.SDL_GL_SetAttribute(sdl2.SDL_GL_BLUE_SIZE, 8)
-        sdl2.SDL_GL_SetAttribute(sdl2.SDL_GL_ALPHA_SIZE, 8)
-        # Enable double buffer
-        sdl2.SDL_GL_SetAttribute(
-            sdl2.SDL_GL_DOUBLEBUFFER, 1)
-        # Enable hardware acceleration
-        sdl2.SDL_GL_SetAttribute(sdl2.SDL_GL_ACCELERATED_VISUAL, 1)
-        # First, configure attributes for OpenGL: end
-
-        # Second, create window for OpenGL
-        self._m_window = sdl2.SDL_CreateWindow(b"Spaceship Shooter 3D",
-                                               sdl2.SDL_WINDOWPOS_CENTERED,
-                                               sdl2.SDL_WINDOWPOS_CENTERED, 1024, 768, sdl2.SDL_WINDOW_OPENGL)
-        if self._m_window == None:
-            sdl2.SDL_Log(b"Window failed: ", sdl2.SDL_GetError())
-            return False
-
-        # Third, create context for OpenGL (Contains color buff., textures, models, etc.)
-        self._m_context = sdl2.SDL_GL_CreateContext(self._m_window)
-
-        # Fourth, load shaders
-        if not self._load_shaders():
-            sdl2.SDL_Log(b"Failed to load shader program")
-            return False
-
-        # Fifth, create quad mesh for drawing
-        self._create_sprite_vertices()
-
-        # Initialize SDL image library
-        if sdlimage.IMG_Init(sdlimage.IMG_INIT_PNG) == 0:
-            sdl2.SDL_Log(b"Image initialization failed: ", sdl2.SDL_GetError())
-            return False
-
-        # Initiate random generator class
-        Random.init(4)
 
         self._load_data()
 
@@ -203,35 +156,6 @@ class Game:
         sdl2.SDL_GL_SwapWindow(self._m_window)
 
         return True
-
-    def _load_shaders(self) -> bool:
-        self._m_sprite_shader = Shader()
-        if not self._m_sprite_shader.load("shaders/sprite.vert", "shaders/sprite.frag"):
-            return False
-        self._m_sprite_shader.set_active()
-
-        # Set the view-projection matrix
-        view_proj: Matrix4 = Matrix4.create_simple_view_proj(1024.0, 768.0)
-        self._m_sprite_shader.set_matrix_uniform("uViewProj", view_proj)
-
-        return True
-
-    def _create_sprite_vertices(self) -> None:
-        vertices: ctypes.Array = (ctypes.c_float * 20)(
-            -0.5, 0.5, 0.0, 0.0, 0.0,    # Top left
-            0.5, 0.5, 0.0, 1.0, 0.0,     # Top right
-            0.5, -0.5, 0.0, 1.0, 1.0,    # Bottom right
-            -0.5, -0.5, 0.0, 0.0, 1.0    # Bottom left
-        )
-
-        indices: ctypes.Array = (ctypes.c_uint * 6)(
-            0, 1, 2,
-            2, 3, 0
-        )
-
-        # Vertices describing a quad (AKA quad mesh used for all sprites!)
-        self._m_sprite_vertices = VertexArray(
-            vertices, 4, indices, 6)
 
     def _load_data(self) -> None:
         # Ship and its components (composed in constructor)
