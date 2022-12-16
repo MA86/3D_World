@@ -12,7 +12,6 @@ class MeshComponent(Component):
 
         self._m_owner.get_game().get_renderer().add_mesh_comp(self)
 
-    # TODO see who calls this
     def delete(self) -> None:
         # Remove from owner's list
         super().delete()
@@ -26,7 +25,8 @@ class MeshComponent(Component):
             shader.set_matrix_uniform(
                 "uWorldTransform", self._m_owner.get_world_transform())
             # TODO: later set specular power
-            # Set the active texture
+
+            # Set the mesh's texture as active
             texture: Texture = self._m_mesh.get_texture(self._m_texture_index)
             if texture:
                 texture.set_active()

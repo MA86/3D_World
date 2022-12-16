@@ -25,9 +25,9 @@ class Mesh:
 
     def delete(self) -> None:
         # Nothing to implement
-        raise NotImplementedError()
+        pass
 
-    # Creates a list of vertices and indices from JSON file
+    # Creates a list of vertices and indices from JSON mesh file
     def load(self, file_name: str, renderer: Renderer) -> bool:
         file_obj = open(file_name, "r")
         if not file_obj:
@@ -48,7 +48,7 @@ class Mesh:
 
         vert_size: int = 8
 
-        # Load textures
+        # LOAD TEXTURES:
         textures_data: list = data["textures"]
         if not textures_data or len(textures_data) < 1:
             sdl2.SDL_Log(b"Mesh has no textures: ", file_name.encode())
@@ -67,7 +67,7 @@ class Mesh:
                     texture = renderer.get_texture("assets/default.png")
             self._m_textures.append(texture)
 
-        # Load in vertices
+        # LOAD VERTICES:
         verts_data: list = data["vertices"]
         if not verts_data or len(verts_data) < 1:
             sdl2.SDL_Log("Mesh has no vertices: ", file_name.encode())
@@ -94,7 +94,7 @@ class Mesh:
 
         self._m_radius = math.sqrt(self._m_radius)
 
-        # Load in indices
+        # LOAD INDICES:
         inds_data: list = data["indices"]
         if not inds_data or len(inds_data) < 1:
             sdl2.SDL_Log("Mesh has no indices: ", file_name.encode())
@@ -114,8 +114,8 @@ class Mesh:
         count = 0
 
         # Finally, create a vertex array
-        self._m_vertex_array = VertexArray(vertices, len(
-            vertices) / vert_size, indices, len(indices))
+        self._m_vertex_array = VertexArray(vertices, int(
+            len(vertices) / vert_size), indices, len(indices))
         return True
 
     def unload(self) -> None:

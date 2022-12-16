@@ -20,7 +20,7 @@ class Shader:
 
     def delete(self) -> None:
         # TODO: Perhaps self.unload()? Currently unused
-        raise NotImplementedError
+        pass
 
     # Load vertex & frag shaders
     def load(self, vert_name: str, frag_name: str) -> bool:

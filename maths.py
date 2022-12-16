@@ -59,6 +59,10 @@ def atan2(y: float, x: float) -> float:
     return math.atan2(y, x)
 
 
+def cot(angle: float) -> float:
+    return 1.0 / math.tan(angle)
+
+
 ### Math classes ###
 
 
@@ -170,6 +174,11 @@ class Vector3D:
         self.x /= length
         self.y /= length
         self.z /= length
+
+    @staticmethod
+    def normalize_static(vec: Vector3D) -> Vector3D:
+        vec.normalize()
+        return vec
 
     # Dot product between vectors
     @staticmethod
@@ -420,6 +429,70 @@ class Matrix4:
         ret_val.m_mat[3][3] = 1.0
 
         return ret_val
+
+    @staticmethod
+    def create_look_at(eye: Vector3D, target: Vector3D, up: Vector3D) -> Matrix4:
+        zaxis = Vector3D.normalize_static(target - eye)
+        xaxis = Vector3D.normalize_static(Vector3D.cross(up, zaxis))
+        yaxis = Vector3D.normalize_static(Vector3D.cross(zaxis, xaxis))
+
+        trans = Vector3D()
+        trans.x = -Vector3D.dot(xaxis, eye)
+        trans.y = -Vector3D.dot(yaxis, eye)
+        trans.z = -Vector3D.dot(zaxis, eye)
+
+        temp: Matrix4 = Matrix4()
+
+        temp.m_mat[0][0] = xaxis.x
+        temp.m_mat[0][1] = yaxis.x
+        temp.m_mat[0][2] = zaxis.x
+        temp.m_mat[0][3] = 0.0
+
+        temp.m_mat[1][0] = xaxis.y
+        temp.m_mat[1][1] = yaxis.y
+        temp.m_mat[1][2] = zaxis.y
+        temp.m_mat[1][3] = 0.0
+
+        temp.m_mat[2][0] = xaxis.z
+        temp.m_mat[2][1] = yaxis.z
+        temp.m_mat[2][2] = zaxis.z
+        temp.m_mat[2][3] = 0.0
+
+        temp.m_mat[3][0] = trans.x
+        temp.m_mat[3][1] = trans.y
+        temp.m_mat[3][2] = trans.z
+        temp.m_mat[3][3] = 1.0
+
+        return temp
+
+    @staticmethod
+    def create_perspective_FOV(fovY: float, width: float, height: float, near: float, far: float):
+        yscale = cot(fovY / 2.0)
+        xscale = yscale * height / width
+
+        temp: Matrix4 = Matrix4()
+
+        temp.m_mat[0][0] = xscale
+        temp.m_mat[0][1] = 0.0
+        temp.m_mat[0][2] = 0.0
+        temp.m_mat[0][3] = 0.0
+
+        temp.m_mat[1][0] = 0.0
+        temp.m_mat[1][1] = yscale
+        temp.m_mat[1][2] = 0.0
+        temp.m_mat[1][3] = 0.0
+
+        temp.m_mat[2][0] = 0.0
+        temp.m_mat[2][1] = 0.0
+        temp.m_mat[2][2] = far / (far - near)
+        temp.m_mat[2][3] = 1.0
+
+        temp.m_mat[3][0] = 0.0
+        temp.m_mat[3][1] = 0.0
+        temp.m_mat[3][2] = -near * far / (far - near)
+        temp.m_mat[3][3] = 0.0
+
+        return temp
 
     # TODO, add additional matrix4 operations
 
