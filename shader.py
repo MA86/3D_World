@@ -69,6 +69,14 @@ class Shader:
         # GL.glGetUniformfv(self._m_shader_program_id, loc, p)
         # print(list(p[0]))
 
+    def set_vector_uniform(self, name: str, vector: Vector3D) -> None:
+        # TODO
+        raise NotImplementedError()
+
+    def set_float_uniform(self, name: str, value: float) -> None:
+        # TODO
+        raise NotImplementedError()
+
     # Compile specified shader, [TODO simplify this func.]
     def _compile_shader(self, file_name: str, shader_type: GL.GLenum, name: str) -> bool:
         if name == "vertex":

@@ -95,6 +95,11 @@ class Renderer:
         # Third, create context for OpenGL (Contains color buff., textures, models, etc.)
         self._m_context = sdl2.SDL_GL_CreateContext(self._m_window)
 
+        # Initialize SDL image library
+        if sdlimage.IMG_Init(sdlimage.IMG_INIT_PNG) == 0:
+            sdl2.SDL_Log(b"Image initialization failed: ", sdl2.SDL_GetError())
+            return False
+
         # Fourth, load shaders
         if not self._load_shaders():
             sdl2.SDL_Log(b"Failed to load shader program")
@@ -103,16 +108,10 @@ class Renderer:
         # Fifth, create quad mesh for sprites
         self._create_sprite_vertices()
 
-        # Initialize SDL image library
-        if sdlimage.IMG_Init(sdlimage.IMG_INIT_PNG) == 0:
-            sdl2.SDL_Log(b"Image initialization failed: ", sdl2.SDL_GetError())
-            return False
-
         return True
 
     def shutdown(self) -> None:
         # Shutdown in reverse
-        self.unload_data()
         self._m_sprite_vertices.delete()
         self._m_sprite_shader.unload()
         del self._m_sprite_shader

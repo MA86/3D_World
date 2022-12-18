@@ -66,6 +66,8 @@ class Mesh:
                     # If still None, use default texture
                     texture = renderer.get_texture("assets/default.png")
             self._m_textures.append(texture)
+            # Test
+            print(len(self._m_textures))
 
         # LOAD VERTICES:
         verts_data: list = data["vertices"]
