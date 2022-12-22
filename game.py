@@ -8,7 +8,7 @@ from maths import Vector3D, Quaternion, PI_OVER_TWO, PI
 from renderer import Renderer
 from mesh_component import MeshComponent
 from actor import State, Actor
-# TODO import camera and plane
+from camera_actor import CameraActor
 
 
 class Game:
@@ -24,7 +24,7 @@ class Game:
         self._m_time_then: ctypes.c_uint32 = ctypes.c_uint32()
 
         # Game-specific code
-        # TODO: add mCamera
+        self._m_camera_actor: CameraActor = None
 
     def initialize(self) -> bool:
         # Initialize SDL library
@@ -121,7 +121,7 @@ class Game:
         # Create cube actor
         a = Actor(self)
         a.set_position(Vector3D(200.0, 75.0, 0.0))
-        a.set_scale(50.0)
+        a.set_scale(100.0)
         q = Quaternion.create_quaternion(Vector3D(0.0, 1.0, 0.0), -PI_OVER_TWO)
         q = Quaternion.concatenate(q, Quaternion.create_quaternion(
             Vector3D(0.0, 0.0, 1.0), PI + PI / 4.0))
@@ -130,7 +130,23 @@ class Game:
         mc = MeshComponent(a)
         mc.set_mesh(self._m_renderer.get_mesh("assets/cube.gpmesh"))
 
-        # TODO: create sphere actor and more...
+        # Create sphere actor
+        a = Actor(self)
+        a.set_position(Vector3D(200.0, -75.0, 0.0))
+        a.set_scale(3.0)
+
+        mc = MeshComponent(a)
+        mc.set_mesh(self._m_renderer.get_mesh("assets/sphere.gpmesh"))
+
+        # Create lights
+        self._m_renderer.set_ambient_light(Vector3D(0.2, 0.2, 0.2))
+        dir_light = self._m_renderer.get_directional_light()
+        dir_light._m_direction = Vector3D(0.0, -0.707, -0.707)
+        dir_light._m_diffuse_color = Vector3D(0.78, 0.88, 1.0)
+        dir_light._m_spec_color = Vector3D(0.8, 0.8, 0.8)
+
+        # Create camera
+        self._m_camera_actor = CameraActor(self)
 
     def _unload_data(self) -> None:
         while len(self._m_actors) != 0:

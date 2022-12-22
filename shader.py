@@ -70,12 +70,16 @@ class Shader:
         # print(list(p[0]))
 
     def set_vector_uniform(self, name: str, vector: Vector3D) -> None:
-        # TODO
-        raise NotImplementedError()
+        loc: GL.GLuint = GL.glGetUniformLocation(
+            self._m_shader_program_id, name)
+        # Send vector data
+        GL.glUniform3fv(loc, 1, (vector.x, vector.y, vector.z))
 
     def set_float_uniform(self, name: str, value: float) -> None:
-        # TODO
-        raise NotImplementedError()
+        loc: GL.GLuint = GL.glGetUniformLocation(
+            self._m_shader_program_id, name)
+        # Send float data
+        GL.glUniform1f(loc, value)
 
     # Compile specified shader, [TODO simplify this func.]
     def _compile_shader(self, file_name: str, shader_type: GL.GLenum, name: str) -> bool:

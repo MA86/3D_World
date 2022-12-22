@@ -24,7 +24,9 @@ class MeshComponent(Component):
             # Set world transform uniform
             shader.set_matrix_uniform(
                 "uWorldTransform", self._m_owner.get_world_transform())
-            # TODO: later set specular power
+            # Set specular power
+            shader.set_float_uniform(
+                "uSpecPower", self._m_mesh.get_spec_power())
 
             # Set the mesh's texture as active
             texture: Texture = self._m_mesh.get_texture(self._m_texture_index)

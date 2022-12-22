@@ -268,6 +268,9 @@ class Matrix4:
         self.m_mat[3][2] = 0.0
         self.m_mat[3][3] = 1.0
 
+    def get_translation(self) -> Vector3D:
+        return Vector3D(self.m_mat[3][0], self.m_mat[3][1], self.m_mat[3][2])
+
     # Matrix multiplication
     def __mul__(self, other: Matrix4) -> Matrix4:
         ret_val: Matrix4 = Matrix4()

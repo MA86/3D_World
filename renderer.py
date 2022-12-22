@@ -11,7 +11,14 @@ from texture import Texture
 from mesh import Mesh
 import ctypes
 
-# TODO later, add struct for directional light
+# Struct for directional ligh
+
+
+class DirectionalLight:
+    def __init__(self) -> None:
+        self._m_direction: Vector3D = None
+        self._m_diffuse_color: Vector3D = None
+        self._m_spec_color: Vector3D = None
 
 
 class Renderer:
@@ -45,9 +52,9 @@ class Renderer:
         self._m_screen_width: float = None
         self._m_screen_height: float = None
 
-        # Lighting TODO
+        # Lighting
         self._m_ambient_light: Vector3D = None
-        self._m_dir_light: DirectionalLight = None
+        self._m_dir_light: DirectionalLight = DirectionalLight()
 
         # SDL window/context
         self._m_window: sdl2.SDL_Window = None
@@ -149,7 +156,8 @@ class Renderer:
         self._m_mesh_shader.set_matrix_uniform(
             "uViewProj", self._m_view * self._m_projection)
 
-        # TODO Update lighting uniforms
+        # Update lighting uniforms
+        self._set_light_uniforms(self._m_mesh_shader)
 
         for mesh_comp in self._m_mesh_comps:
             # [Note: mesh vertex array is set active in this draw!]
@@ -239,7 +247,7 @@ class Renderer:
 
         # Create mesh shader
         self._m_mesh_shader = Shader()
-        if not self._m_mesh_shader.load("shaders/basic_mesh.vert", "shaders/basic_mesh.frag"):
+        if not self._m_mesh_shader.load("shaders/phong.vert", "shaders/phong.frag"):
             return False
         self._m_mesh_shader.set_active()
 
@@ -277,8 +285,18 @@ class Renderer:
             vertices, 4, indices, 6)
 
     def _set_light_uniforms(self, shader: Shader) -> None:
-        # TODO later chap
-        pass
+        # Camera position is from inverted view
+        # TODO inv_view: Matrix4 = self._m_view.invert()
+        shader.set_vector_uniform("uCameraPos", self._m_view.get_translation())
+        # Ambient light
+        shader.set_vector_uniform("uAmbientLight", self._m_ambient_light)
+        # Directional light
+        shader.set_vector_uniform(
+            "uDirLight.mDirection", self._m_dir_light._m_direction)
+        shader.set_vector_uniform(
+            "uDirLight.mDiffuseColor", self._m_dir_light._m_diffuse_color)
+        shader.set_vector_uniform(
+            "uDirLight.mSpecColor", self._m_dir_light._m_spec_color)
 
     def set_view_matrix(self, view: Matrix4) -> None:
         self._m_view = view

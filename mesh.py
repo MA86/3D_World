@@ -54,7 +54,8 @@ class Mesh:
             sdl2.SDL_Log(b"Mesh has no textures: ", file_name.encode())
             return False
 
-        # TODO load specularPower later in chap
+        # Load specularPower
+        self._m_spec_power: float = data["specularPower"]
 
         for tex_name in textures_data:
             # Is texture already loaded?
@@ -66,8 +67,6 @@ class Mesh:
                     # If still None, use default texture
                     texture = renderer.get_texture("assets/default.png")
             self._m_textures.append(texture)
-            # Test
-            print(len(self._m_textures))
 
         # LOAD VERTICES:
         verts_data: list = data["vertices"]
@@ -141,5 +140,4 @@ class Mesh:
         return self._m_radius
 
     def get_spec_power(self) -> float:
-        # TODO
-        pass
+        return self._m_spec_power
