@@ -10,7 +10,7 @@ Languages and libraries used for this project include, Python, shader language, 
 
 ## Demonstration
 
-![3d_world](3d_world.gif)
+![3d_world](3d_world.png)
 
 Note: All source code for this 3D world prototype can be found inside `.py` files.
 
