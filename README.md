@@ -1,6 +1,6 @@
 # First Person 3D World
 
-This is a prototype of a first-person 3D world. The purpose of this project is to learn how to create a 3D world using OpenGL library, and also to learn how to create and use shader programs & vertex arrays for 3D models.
+This is prototype of a 3D world. The purpose of this project is to learn how to create a 3D world using OpenGL library, and also to learn how to create and use shader programs & vertex arrays for 3D models.
 
 This project is part of a book that I'm currently reading (see below for name of the book).
 
